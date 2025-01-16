@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+    <script src="https://cdn.jsdelivr.net/npm/@bitrix/desktop-js-sdk@1.1.0"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Inicjalizacja SDK Bitrix
+            BX24.init(function () {
+                // Wywołanie okienka z napisem "Hello World"
+                BX24.callMethod('im.notify', { 
+                    MESSAGE: "Hello World!" 
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Bitrix24 Hello World App</h1>
+</body>
+</html>
