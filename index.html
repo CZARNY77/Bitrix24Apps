@@ -21,6 +21,7 @@
         },
         body: JSON.stringify({
           webhookUrl,
+          userId,
           message,
         }),
       });
@@ -40,6 +41,8 @@
   <input type="text" id="webhookUrl" placeholder="Enter your webhook URL"><br><br>
   <label for="message">Message:</label><br>
   <input type="text" id="message" placeholder="Enter your message"><br><br>
+  <label for="message">User ID:</label><br>
+  <input type="text" id="userId" placeholder="Enter user ID"><br><br>
   <button onclick="sendNotification()">Send Notification</button>
 </body>
 </html>
