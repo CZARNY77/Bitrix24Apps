@@ -1,23 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
-    <script src="https://cdn.jsdelivr.net/npm/@bitrix/desktop-js-sdk@1.1.0"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Inicjalizacja SDK Bitrix
-            BX24.init(function () {
-                // Wywołanie okienka z napisem "Hello World"
-                BX24.callMethod('im.notify', { 
-                    MESSAGE: "Hello World!" 
-                });
-            });
-        });
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitrix24 Notification</title>
+  <script>
+    async function sendNotification() {
+      const webhookUrl = document.getElementById("webhookUrl").value;
+      const message = document.getElementById("message").value;
+
+      if (!webhookUrl || !message) {
+        alert("Please provide both Webhook URL and Message.");
+        return;
+      }
+
+      const response = await fetch("/api/sendNotification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          webhookUrl,
+          message,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Notification sent successfully!");
+      } else {
+        alert("Error: " + result.error);
+      }
+    }
+  </script>
 </head>
 <body>
-    <h1>Bitrix24 Hello World App</h1>
+  <h1>Send Notification to Bitrix24</h1>
+  <label for="webhookUrl">Webhook URL:</label><br>
+  <input type="text" id="webhookUrl" placeholder="Enter your webhook URL"><br><br>
+  <label for="message">Message:</label><br>
+  <input type="text" id="message" placeholder="Enter your message"><br><br>
+  <button onclick="sendNotification()">Send Notification</button>
 </body>
 </html>
