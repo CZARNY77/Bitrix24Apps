@@ -15,7 +15,7 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          USER_ID: userId || 1, // Domyślnie wysyłamy do wszystkich
+          TO: userId || 1, // Domyślnie wysyłamy do wszystkich
           MESSAGE: message,
         }),
       });
