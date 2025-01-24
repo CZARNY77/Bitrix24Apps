@@ -11,6 +11,14 @@ export async function OPTIONS() {
   return new Response(null, { headers });
 }
 
+function createNextResponse(body: any, status: any) {
+  const response = NextResponse.json(body, status);
+  response.headers.set("Access-Control-Allow-Origin", "https://b24-jamegg.bitrix24.site"); // Dopuszczona domena
+  response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Tylko te nagłówki są dozwolone
+  return response;
+}
+
 export async function POST(request: Request) {
   try {
     // Odczyt i walidacja danych wejściowych
@@ -20,10 +28,7 @@ export async function POST(request: Request) {
     // Ukryty URL Bitrix z .env
     const bitrixUrl = process.env.NEXT_PUBLIC_BITRIX_WORKFLOW_START;
     if (!bitrixUrl) {
-      return NextResponse.json(
-        { error: "Bitrix URL is not configured." },
-        { status: 500 }
-      );
+      return createNextResponse({ error: "Bitrix URL is not configured." },{ status: 500 });
     }
 
     // Wywołanie API Bitrix
@@ -38,25 +43,16 @@ export async function POST(request: Request) {
     });
 
     if (response.ok) {
-      response.headers.set("Access-Control-Allow-Origin", "*");
-      response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-      response.headers.set("Access-Control-Allow-Headers", "Content-Type");
       const data = await response.json();
-      return NextResponse.json({ message: "Workflow started successfully.", data }, { status: 200 });
+      return createNextResponse({ message: "Workflow started successfully.", data }, { status: 200 });
     } else {
       const errorData = await response.json();
-      return NextResponse.json(
-        { error: "Failed to start workflow.", details: errorData },
-        { status: 500 }
-      );
+      return createNextResponse({ error: "Failed to start workflow.", details: errorData },{ status: 500 });
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return createNextResponse({ error: error.message }, { status: 400 });
     }
-    return NextResponse.json(
-      { error: "Internal Server Error", details: (error as Error).message },
-      { status: 500 }
-    );
+    return createNextResponse({ error: "Internal Server Error", details: (error as Error).message },{ status: 500 });
   }
 }
