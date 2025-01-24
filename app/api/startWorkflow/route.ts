@@ -11,8 +11,8 @@ export async function OPTIONS() {
   return new Response(null, { headers });
 }
 
-function createNextResponse(body: any, status: any) {
-  const response = NextResponse.json(body, status);
+function createNextResponse(body: string, status: number) {
+  const response = NextResponse.json({message: body}, {status: status});
   response.headers.set("Access-Control-Allow-Origin", "https://b24-jamegg.bitrix24.site"); // Dopuszczona domena
   response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Tylko te nagłówki są dozwolone
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     // Ukryty URL Bitrix z .env
     const bitrixUrl = process.env.NEXT_PUBLIC_BITRIX_WORKFLOW_START;
     if (!bitrixUrl) {
-      return createNextResponse({ error: "Bitrix URL is not configured." },{ status: 500 });
+      return createNextResponse("Bitrix URL is not configured.",500);
     }
 
     // Wywołanie API Bitrix
@@ -44,15 +44,15 @@ export async function POST(request: Request) {
 
     if (response.ok) {
       const data = await response.json();
-      return createNextResponse({ message: "Workflow started successfully.", data }, { status: 200 });
+      return createNextResponse("Workflow started successfully.", 200);
     } else {
       const errorData = await response.json();
-      return createNextResponse({ error: "Failed to start workflow.", details: errorData },{ status: 500 });
+      return createNextResponse( errorData ,500);
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return createNextResponse({ error: error.message }, { status: 400 });
+      return createNextResponse(error.message , 400);
     }
-    return createNextResponse({ error: "Internal Server Error", details: (error as Error).message },{ status: 500 });
+    return createNextResponse((error as Error).message ,500);
   }
 }
