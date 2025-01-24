@@ -2,6 +2,14 @@ import { z } from "zod";
 import findClientSchema from "./schema";
 import { NextResponse } from "next/server";
 
+function createNextResponse(body: any, status: number) {
+  const response = NextResponse.json(body, { status });
+  response.headers.set("Access-Control-Allow-Origin", "*"); // Zmień na swoją domenę w produkcji
+  response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  return response;
+}
+
 export async function GET(request: Request) {
   
     // Odczyt i walidacja danych wejściowych
@@ -9,7 +17,7 @@ export async function GET(request: Request) {
     const email = searchParams.get("email");
   try {
     if (!email) {
-        return NextResponse.json({ error: "Email is required" }, { status: 400 });
+      return createNextResponse({ error: "Email is required" }, 400);
     }
     findClientSchema.parse({ email });
 
@@ -23,20 +31,15 @@ export async function GET(request: Request) {
     // Jeśli znaleziono klienta, zwróć dane
     if (data.result && data.result.length > 0) {
       const client = data.result[0];
-      return NextResponse.json(
-        {
-          id: client.ID,
-        },
-        { status: 200 }
-      );
+      return createNextResponse({ id: client.ID }, 200);
     }
 
     // Jeśli klienta nie znaleziono
-    return NextResponse.json({ error: "Client not found." }, { status: 404 });
+    return createNextResponse({ error: "Client not found." }, 404);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return createNextResponse({ error: error.message }, 400);
     }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return createNextResponse({ error: "Internal Server Error" }, 500);
   }
 }
