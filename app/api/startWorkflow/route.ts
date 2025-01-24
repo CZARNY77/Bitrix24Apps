@@ -2,6 +2,15 @@ import { z } from "zod";
 import startWorkflowSchema from "./schema";
 import { NextResponse } from "next/server";
 
+export async function OPTIONS() {
+  const headers = new Headers();
+  headers.set("Access-Control-Allow-Origin", "https://b24-jamegg.bitrix24.site"); // Dopuszczona domena
+  headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Tylko te nagłówki są dozwolone
+
+  return new Response(null, { headers });
+}
+
 export async function POST(request: Request) {
   try {
     // Odczyt i walidacja danych wejściowych
