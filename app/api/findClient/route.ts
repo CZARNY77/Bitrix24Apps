@@ -2,6 +2,15 @@ import { z } from "zod";
 import findClientSchema from "./schema";
 import { NextResponse } from "next/server";
 
+export async function OPTIONS() {
+  const headers = new Headers();
+  headers.set("Access-Control-Allow-Origin", "*"); // Zmień na swoją domenę w produkcji
+  headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  return new Response(null, { headers });
+}
+
+
 export async function GET(request: Request) {
   
     // Odczyt i walidacja danych wejściowych
