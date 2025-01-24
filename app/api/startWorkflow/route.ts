@@ -43,7 +43,6 @@ export async function POST(request: Request) {
     });
 
     if (response.ok) {
-      const data = await response.json();
       return createNextResponse("Workflow started successfully.", 200);
     } else {
       const errorData = await response.json();
