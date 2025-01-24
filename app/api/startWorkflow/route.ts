@@ -38,6 +38,9 @@ export async function POST(request: Request) {
     });
 
     if (response.ok) {
+      response.headers.set("Access-Control-Allow-Origin", "*");
+      response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+      response.headers.set("Access-Control-Allow-Headers", "Content-Type");
       const data = await response.json();
       return NextResponse.json({ message: "Workflow started successfully.", data }, { status: 200 });
     } else {
