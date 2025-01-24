@@ -23,12 +23,11 @@ export async function GET(request: Request) {
     // Jeśli znaleziono klienta, zwróć dane
     if (data.result && data.result.length > 0) {
       const client = data.result[0];
-      return NextResponse.json(
-        {
-          id: client.ID,
-        },
-        { status: 200 }
-      );
+      let temp = NextResponse.json({id: client.ID,},{ status: 200 });
+      temp.headers.set("Access-Control-Allow-Origin", "*");
+      temp.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+      temp.headers.set("Access-Control-Allow-Headers", "Content-Type");
+      return temp;
     }
 
     // Jeśli klienta nie znaleziono
