@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function OPTIONS() {
   const headers = new Headers();
-  headers.set("Access-Control-Allow-Origin", "*"); // Zmień na swoją domenę w produkcji
+  headers.set("Access-Control-Allow-Origin", "*"); // Lub określona domena w produkcji
   headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
   return new Response(null, { headers });
 }
 
