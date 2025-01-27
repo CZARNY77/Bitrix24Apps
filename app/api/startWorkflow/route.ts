@@ -19,6 +19,11 @@ function createNextResponse(body: string, status: number) {
   return response;
 }
 
+function generateRandomCode(): string {
+  const numbers = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10));
+  return numbers.join("");
+}
+
 export async function POST(request: Request) {
   try {
     // Odczyt i walidacja danych wejściowych
@@ -31,6 +36,7 @@ export async function POST(request: Request) {
       return createNextResponse("Bitrix URL is not configured.",500);
     }
 
+    const randomCode = generateRandomCode();
     // Wywołanie API Bitrix
     const response = await fetch(`${bitrixUrl}/bizproc.workflow.start.json`, {
       method: "POST",
@@ -38,7 +44,9 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         TEMPLATE_ID: templateId,
         DOCUMENT_ID: documentId,
-        PARAMETERS: {},
+        PARAMETERS: {
+          Kod: randomCode,
+        },
       }),
     });
 
