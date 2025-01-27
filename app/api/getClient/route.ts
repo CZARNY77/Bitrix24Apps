@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
     // URL API Bitrix do pobrania kontaktu
     const bitrixUrl = process.env.NEXT_PUBLIC_BITRIX_GET_CONTACT;
-    console.log(bitrixUrl);
+    return createNextResponse(`Bitrix URL: ${bitrixUrl}`, 500);
     if (!bitrixUrl) {
       return createNextResponse("Bitrix URL is not configured.", 500);
     }
