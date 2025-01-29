@@ -11,11 +11,14 @@ export async function OPTIONS() {
   return new Response(null, { headers });
 }
 
-function createNextResponse(body: string, status: number) {
-  const response = NextResponse.json({ message: body }, { status: status });
-  response.headers.set("Access-Control-Allow-Origin", "https://b24-jamegg.bitrix24.site"); // Dopuszczona domena
+function createNextResponse(body: string | object, status: number) {
+  const response = NextResponse.json(
+      typeof body === "string" ? { message: body } : body,
+      { status: status }
+  );
+  response.headers.set("Access-Control-Allow-Origin", "https://b24-jamegg.bitrix24.site");
   response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Tylko te nagłówki są dozwolone
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
   return response;
 }
 
@@ -23,17 +26,17 @@ export async function POST(request: Request) {
   try {
     // Walidacja danych wejściowych
     const body = await request.json();
-    const { contactId, code } = verificationSchema.parse(body);
+    const { dealId } = verificationSchema.parse(body);
 
     // URL API Bitrix do pobrania kontaktu
-    const bitrixUrl = process.env.NEXT_PUBLIC_BITRIX_GET_CONTACT;
+    const bitrixUrl = process.env.NEXT_PUBLIC_BITRIX_GET_DEAL;
     console.log(`Bitrix URL: ${bitrixUrl}`);
     if (!bitrixUrl) {
       return createNextResponse("Bitrix URL is not configured.", 500);
     }
 
     // Pobieranie kontaktu z Bitrix24
-    const response = await fetch(`${bitrixUrl}/crm.contact.get.json?ID=${contactId}`, {
+    const response = await fetch(`${bitrixUrl}/crm.deal.get.json?ID=${dealId}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -44,19 +47,9 @@ export async function POST(request: Request) {
     }
 
     const contactData = await response.json();
+    const deal = contactData.result;
 
-    // Pobranie pola Kod weryfikacyjny
-    const verificationCode = contactData.result?.["UF_CRM_1738011343"];
-    if (!verificationCode) {
-      return createNextResponse("Verification code not found in contact.", 404);
-    }
-
-    // Porównanie kodów
-    if (verificationCode === code) {
-      return createNextResponse("Verification successful.", 200);
-    } else {
-      return createNextResponse("Verification failed. Code does not match.", 401);
-    }
+    return createNextResponse(deal, 200);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return createNextResponse(error.message, 400);
