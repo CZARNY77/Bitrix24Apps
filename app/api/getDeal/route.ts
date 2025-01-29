@@ -35,7 +35,6 @@ export async function POST(request: Request) {
       return createNextResponse("Bitrix URL is not configured.", 500);
     }
 
-    // Pobieranie kontaktu z Bitrix24
     const response = await fetch(`${bitrixUrl}/crm.deal.get.json?ID=${dealId}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
